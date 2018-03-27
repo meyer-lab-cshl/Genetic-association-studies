@@ -9,7 +9,7 @@ qqplot <- function(pvalues, ci = 0.95, is.negLog=FALSE,
     }
 
     df <- data.frame(
-        observed = -log10(sort(pvalues)),
+        observed = observed,
         expected = -log10(1:N / N),
         clower   = -log10(qbeta(ci,     1:N, N - 1:N + 1)),
         cupper   = -log10(qbeta(1 - ci, 1:N, N - 1:N + 1))
