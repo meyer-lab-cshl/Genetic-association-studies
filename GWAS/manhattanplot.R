@@ -25,8 +25,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 	names(d)[names(d) == chr] <- "CHR"
 	names(d)[names(d) == bp] <- "BP"
 	names(d)[names(d) == p] <- "P"
-colManhattan <- c("#F98400", "gray70")
-fdr_single=8.636346e-06
+    
     if (!is.null(d[[snp]])) {
 		names(d)[names(d) == snp] <- "SNP"
 	}
