@@ -1,6 +1,13 @@
-qqplot <- function(pvalues, ci = 0.95, highlight=NULL, name="", size.title=12,
+qqplot <- function(pvalues, ci = 0.95, is.negLog=FALSE,
+                   highlight=NULL, name="", size.title=12,
                    size.text=12) {
     N  <- length(pvalues)
+    if (is.negLog) {
+        observed <- sort(pvalues, decreasing=TRUE)
+    } else {
+        observed <- -log10(sort(pvalues))
+    }
+
     df <- data.frame(
         observed = -log10(sort(pvalues)),
         expected = -log10(1:N / N),
