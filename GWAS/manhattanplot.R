@@ -1,7 +1,7 @@
 manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 					title=NULL, max.y="max", min.y="min", 
                     suggestiveline=0, genomewideline=-log10(5e-8), 
-                    size.x.labels=12, size.y.labels=12, is.negLog10=FALSE,
+                    size.x.labels=12, size.y.labels=12, is.negLog=FALSE,
                     mtvsst=FALSE, trial=FALSE, xscale=FALSE, highlight=NULL, 
                     color=c("#67a9cf", "#016c59"), a=0.5, 
 					colorGenomewide = "gray90", colorSuggestive = "gray90",
@@ -21,7 +21,6 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     if (!is.numeric(d[[p]]))
         stop(paste(p, "column should be numeric."))
 
-    names(d) <- toupper(names(d))
 	names(d)[names(d) == chr] <- "CHR"
 	names(d)[names(d) == bp] <- "BP"
 	names(d)[names(d) == p] <- "P"
@@ -30,12 +29,12 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 		names(d)[names(d) == snp] <- "SNP"
 	}
 
-    if (!is.negLog10) {
+    if (!is.negLog) {
         d = subset(d[order(d$CHR, d$BP), ], (P > 0 & P <= 1 & is.numeric(P)))
         message("Pvalues are converted to negative log10 pvalues")
         d$logp = -log10(d$P)
     } else {
-        d = d[order(d$CHR, d$BP), ]
+        d = d[order(d$CHR, d$BP),]
         message("log10(p values) are used to depict results")
         d$logp = d$P
     }    
