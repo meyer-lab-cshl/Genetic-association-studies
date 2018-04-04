@@ -1,7 +1,7 @@
 manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 					title=NULL, max.y="max", min.y="min", 
                     suggestiveline=0, genomewideline=-log10(5e-8), 
-                    size.x.labels=12, size.y.labels=12, score=FALSE,
+                    size.x.labels=12, size.y.labels=12, is.negLog10=FALSE,
                     mtvsst=FALSE, trial=FALSE, xscale=FALSE, highlight=NULL, 
                     color=c("#67a9cf", "#016c59"), a=0.5, 
 					colorGenomewide = "gray90", colorSuggestive = "gray90",
@@ -30,22 +30,20 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 		names(d)[names(d) == snp] <- "SNP"
 	}
 
-    if (score == FALSE ) {
+    if (!is.negLog10) {
         d = subset(d[order(d$CHR, d$BP), ], (P > 0 & P <= 1 & is.numeric(P)))
         message("Pvalues are converted to negative log10 pvalues")
         d$logp = -log10(d$P)
-        ylab=expression(-log[10](italic(p)))
     } else {
         d = d[order(d$CHR, d$BP), ]
-        message("log10(Score values +1) are used to depict results")
+        message("log10(p values) are used to depict results")
         d$logp = d$P
-        ylab = "Score"
     }    
+    ylab=expression(-log[10](italic(p)))
     
     d <- d[d$CHR %in% 1:22, ]
     
 	d <- na.omit(d)
-	d <- d[d$P > 0 & d$P <= 1, ]
 	
     d$pos <- NA
 	ticks <- NULL
