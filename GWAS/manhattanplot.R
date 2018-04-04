@@ -1,3 +1,5 @@
+library(ggplot2)
+
 manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 					title=NULL, max.y="max", min.y="min", 
                     suggestiveline=0, genomewideline=-log10(5e-8), 

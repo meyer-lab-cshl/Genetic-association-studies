@@ -1,3 +1,5 @@
+library(ggplot2)
+
 qqplot <- function(pvalues, ci = 0.95, is.negLog=FALSE,
                    highlight=NULL, name="", size.title=12,
                    size.text=12) {
