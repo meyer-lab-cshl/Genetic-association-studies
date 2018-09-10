@@ -20,8 +20,8 @@
 #' @param max.y [double] maximum y-value to plot.
 #' @param is.negLog [logical] indicates that [p] column is already converted to
 #' -log10(p-value)
-#' @param compare [logical] should different analysis types be compared and
-#' depicted in different colors? If so, provide additional factor column
+#' @param compareAnalysis [logical] should different analysis types be compared
+#' and depicted in different colors? If so, provide additional factor column
 #' [compare] with information about analysis group.
 #' @param highlight [logical] vector of variant IDs to be highlighted on plot.
 #' Variant ID's have to be present in the [snp] column.
@@ -39,8 +39,9 @@
 #' return ggplot2 object of manhattan plot.
 
 manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
+                    compare="TYPE", compareAnalysis=FALSE,
                     title=NULL, max.y="max", min.y="min", is.negLog=FALSE,
-                    compare=FALSE, highlight=NULL, colorHighlight="green",
+                    highlight=NULL, colorHighlight="green",
                     color=c("#67a9cf", "#016c59"), a=0.5,
                     genomewideline=-log10(5e-8), colorGenomewide = "gray90",
                     linetypeGenomewide = 1,
@@ -56,7 +57,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     if (!is.numeric(d[[chr]])) {
         stop(paste(chr, "column should be numeric. Does your [chr] column",
                     "chromsomes in chr1 etc format? Are there 'X', 'Y',",
-                    " 'MT', etc?" If so, change them to numeric encoding.))
+                    " 'MT', etc? If so, change them to numeric encoding."))
     }
 
     names(d)[names(d) == chr] <- "CHR"
@@ -66,12 +67,15 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     if (!is.null(d[[snp]])) {
         names(d)[names(d) == snp] <- "SNP"
     }
+    if (!is.null(d[[compare]])) {
+        names(d)[names(d) == compare] <- "TYPE"
+    }
 
     d <- na.omit(d)
 
     if (!is.negLog) {
         if (any(P < 0 | P >= 1)) stop ("P-values have to be in range (0,1]")
-        d  <- d[order(d$CHR, d$BP)
+        d  <- d[order(d$CHR, d$BP),]
         message("Pvalues are converted to negative log10 pvalues")
         d$logp <- -log10(d$P)
     } else {
@@ -92,7 +96,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
             if (i == 1) {
                 d[d$CHR==i, ]$pos <- d[d$CHR==i, ]$BP
             } else {
-                lastbase <- lastbase + max(subset(d,CHR==i-1)$BP)
+                lastbase <- lastbase + max(subset(d, CHR==i-1)$BP)
                 d[d$CHR==i, ]$pos <- d[d$CHR==i, ]$BP + lastbase
             }
             ticks <- c(ticks,
@@ -139,9 +143,9 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 
     if (compare) {
         if (!raster) {
-            p <- p + ggplot2::geom_point(aes(color=TYPE, alpha = a)
+            p <- p + ggplot2::geom_point(aes(color=TYPE, alpha = a))
         } else {
-            p <- p + ggrastr::geom_point_rast(aes(color=TYPE, alpha = a)
+            p <- p + ggrastr::geom_point_rast(aes(color=TYPE, alpha = a))
         }
         p <- p + ggplot2::scale_colour_manual(values=color)
     } else {
