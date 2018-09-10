@@ -74,7 +74,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     d <- na.omit(d)
 
     if (!is.negLog) {
-        if (any(P < 0 | P >= 1)) stop ("P-values have to be in range (0,1]")
+        if (any(d$P < 0 | d$P >= 1)) stop ("P-values have to be in range (0,1]")
         d  <- d[order(d$CHR, d$BP),]
         message("Pvalues are converted to negative log10 pvalues")
         d$logp <- -log10(d$P)
@@ -123,7 +123,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     ylab <-expression(-log[10](italic(p)))
 
     if (numchroms == 1) {
-        p <- ggplot2::ggplot(data=d, aes(x=pos, y=logp))
+        p <- ggplot2::ggplot(data=d, ggplot2::aes(x=pos, y=logp))
         if (! raster) {
             p <- p + ggplot2::geom_point()
         } else {
@@ -132,7 +132,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
         p <- p + ggplot2::ylab(expression(-log[10](italic(p)))) +
             ggplot2::xlab(paste("Chromosome", unique(d$CHR),"position"))
     } else {
-        p <- ggplot2::ggplot(data=d, aes(x=pos, y=logp))
+        p <- ggplot2::ggplot(data=d, ggplot2::aes(x=pos, y=logp))
         p <- p + ggplot2::ylab(expression(-log[10](italic(p))))
         p  <- p + ggplot2::scale_x_continuous(name="Chromosome", breaks=ticks,
                                limits=ticklim, expand=c(0.01,0.01),
@@ -141,21 +141,21 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
                                              expand=c(0.01,0.01))
     }
 
-    if (compare) {
+    if (compareAnalysis) {
         if (!raster) {
-            p <- p + ggplot2::geom_point(aes(color=TYPE, alpha = a))
+            p <- p + ggplot2::geom_point(ggplot2::aes(color=TYPE, alpha = a))
         } else {
-            p <- p + ggrastr::geom_point_rast(aes(color=TYPE, alpha = a))
+            p <- p + ggrastr::geom_point_rast(ggplot2::aes(color=TYPE, alpha = a))
         }
         p <- p + ggplot2::scale_colour_manual(values=color)
     } else {
         if (!raster) {
-            p <- p + ggplot2::geom_point(aes(color=as.factor(CHR)))
+            p <- p + ggplot2::geom_point(ggplot2::aes(color=as.factor(CHR)))
         } else {
-            p <- p + ggrastr::geom_point_rast(aes(color=as.factor(CHR)))
+            p <- p + ggrastr::geom_point_rast(ggplot2::aes(color=as.factor(CHR)))
         }
         p <- p + ggplot2::scale_colour_manual(values=mycols, guide=FALSE)
-        p <- p + ggplot2::theme(legend.position = "none") 
+        p <- p + ggplot2::theme(legend.position = "none")
     }
     if (!is.null(highlight)) {
         if (any(!(highlight %in% as.vector(d$SNP)))) {
@@ -170,17 +170,11 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     }
     p <- p + ggplot2::theme_classic()
     p <- p + ggplot2::theme(
-        axis.text.x=element_text(size=size.x.labels, colour="grey50"),
-        axis.text.y=element_text(size=size.y.labels, colour="grey50"),
-        axis.ticks=element_blank()
+        axis.text.x=ggplot2::element_text(size=size.x.labels, colour="grey50"),
+        axis.text.y=ggplot2::element_text(size=size.y.labels, colour="grey50"),
+        axis.ticks=ggplot2::element_blank()
     )
 
-    if (suggestiveline) {
-        p <- p + ggplot2::geom_segment(x=min(d$pos), xend=max(d$pos),
-                        y=suggestiveline, yend=suggestiveline,
-                        colour=colorSuggestive,
-                        linetype=linetypeSuggestive)
-    }
     if (genomewideline) {
         p <- p + ggplot2::geom_segment(x=min(d$pos), xend=max(d$pos),
                         y=genomewideline, yend=genomewideline,
@@ -233,33 +227,35 @@ qqplot <- function(pvalues, ci=0.95, is.negLog=FALSE,
     ylabel <- expression(Observed~~-log[10](italic(p)))
 
     p <- ggplot2::ggplot(df)
-    p <- p + ggplot2::geom_ribbon(aes(x=expected, ymin=clower, ymax=cupper),
-                            fill="gray90") +
-        ggplot2::geom_segment(aes(x=0, y=0, xend=max(df$expected),
+    p <- p + ggplot2::geom_ribbon(ggplot2::aes(x=expected, ymin=clower,
+                                               ymax=cupper), fill="gray90") +
+        ggplot2::geom_segment(ggplot2::aes(x=0, y=0, xend=max(df$expected),
                          yend=max(df$expected)), color="gray10") +
         ggplot2::xlim(0, max(df$expected)) +
         ggplot2::labs(x=xlabel, y=ylabel) +
         ggplot2::theme_bw() +
-        theme(axis.title=element_text(size=size.title),
-              axis.text=element_text(size=size.text)
+        theme(axis.title=ggplot2::element_text(size=size.title),
+              axis.text=ggplot2::element_text(size=size.text)
               )
     if (!is.null(highlight)) {
         if (!raster) {
-            p <- p + ggplot2::geom_point(aes(x=expected, y=observed,
-                                        color=highlight))
+            p <- p + ggplot2::geom_point(ggplot2::aes(x=expected, y=observed,
+                                                      color=highlight))
         } else {
-            p <- p + ggrastr::geom_point_rast(aes(x=expected, y=observed,
-                                        color=highlight))
+            p <- p + ggrastr::geom_point_rast(ggplot2::aes(x=expected,
+                                                           y=observed,
+                                                           color=highlight))
        }
        p <- p + ggplot2::scale_color_manual(values=c("#32806E","gray10"),
                                             name=name)
     } else {
         if (!raster) {
-            p <- p + ggplot2::geom_point(aes(x=expected, y=observed),
+            p <- p + ggplot2::geom_point(ggplot2::aes(x=expected, y=observed),
                                          col="gray10")
         } else {
-            p <- p + ggrastr::geom_point_rast(aes(x=expected, y=observed),
-                                         col="gray10")
+            p <- p + ggrastr::geom_point_rast(ggplot2::aes(x=expected,
+                                                           y=observed,
+                                                           col="gray10")
        }
     }
     p
