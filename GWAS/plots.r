@@ -206,7 +206,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 
 qqplot <- function(pvalues, ci=0.95, is.negLog=FALSE,
                    highlight=NULL, name="", size.title=12,
-                   size.text=12) {
+                   size.text=12, raster=TRUE) {
     N  <- length(pvalues)
     if (is.negLog) {
         observed <- sort(pvalues, decreasing=TRUE)
@@ -234,7 +234,7 @@ qqplot <- function(pvalues, ci=0.95, is.negLog=FALSE,
         ggplot2::xlim(0, max(df$expected)) +
         ggplot2::labs(x=xlabel, y=ylabel) +
         ggplot2::theme_bw() +
-        theme(axis.title=ggplot2::element_text(size=size.title),
+        ggplot2::theme(axis.title=ggplot2::element_text(size=size.title),
               axis.text=ggplot2::element_text(size=size.text)
               )
     if (!is.null(highlight)) {
@@ -254,8 +254,8 @@ qqplot <- function(pvalues, ci=0.95, is.negLog=FALSE,
                                          col="gray10")
         } else {
             p <- p + ggrastr::geom_point_rast(ggplot2::aes(x=expected,
-                                                           y=observed,
-                                                           col="gray10")
+                                                           y=observed),
+                                              col="gray10")
        }
     }
     p
