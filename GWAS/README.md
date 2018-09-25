@@ -27,6 +27,8 @@ and processing results from genome-wide association studies.
     significance threshold and ld structure. Relies on externally computed lists
     of genetic variants and their tags in
     [plink list-tags format](https://www.cog-genomics.org/plink/1.9/ld#show_tags).
+    The workflow for generating tag-lists from the European samples of the 1000Genomes
+    project is detailed [here](https://github.com/HannahVMeyer/Genetic-association-studies/tree/master/reference/1000Genomes).
     * helperLDfilter.sh: helper function called from LDfilter.R; generates
       temporary files by filtering external tag list for significant variants.
       Temporary files are cleared after analysis.

@@ -13,14 +13,14 @@ integration of R source files. Application of functions in this repository via m
 
 ## 1. GWAS
 Functions for processing and depicting of genome-wide association analysis
-results, find them [here]()
+results, find them [here](https://github.com/HannahVMeyer/Genetic-association-studies/tree/master/GWAS)
 
 ## 2. reference
 Shell scripts for downloading and processing of reference data sets used in
 human genetic association studies.
-    1. [1000Genomes]()
+1. [1000Genomes](https://github.com/HannahVMeyer/Genetic-association-studies/tree/master/reference)
 ## 3. utils
-Generally useful functions for plotting and data processing, find them [here]().
+Generally useful functions for plotting and data processing, find them [here](https://github.com/HannahVMeyer/Genetic-association-studies/tree/master/utils).
 
 ## 4. Genotyping quality control
 
