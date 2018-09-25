@@ -5,7 +5,9 @@
 #'
 #' @param summarystats [NrSNP x P ] matrix of summary stastics from GWAS of
 #' NrSNP number of SNPs for P traits.
-#' @return [NrSNPs x 1] vector of meta-analysis p-values
+#' @return named list with i) [NrSNPs x 1] vector of meta-analysis p-values
+#' (multitrait_p) and ii) [NrSNPs x 1] vector of meta-analysis of chi square
+#' statistic (chi2stats).
 #' @references Bolormaa S, Pryce JE, Reverter A, Zhang Y, Barendse W, et al.
 #' (2014) A Multi-Trait, Meta-analysis for Detecting Pleiotropic Polymorphisms
 #' for Stature, Fatness and Reproduction in Beef Cattle. PLoS Genet 10(3):
@@ -18,7 +20,7 @@ pseudoMultitrait <- function(summarystats) {
                          t(z) %*% cor_sstats_inv %*% z
             })
     multitrait_p <- as.vector(pchisq(chi2stats, df, lower.tail=FALSE))
-    return(multitrait_p)
+    return(list(multitrait_p=multitrait_p, chi2stats=chi2stats))
 }
 
 #' Estimate effective number of tests
