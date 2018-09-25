@@ -7,13 +7,19 @@ thereof.
 
 ## 1. GWAS
 Functions for processing and depicting of genome-wide association analysis
-results.
-## 2. utils
-General useful functions for plotting and data processing.
-## 3. Genotyping quality control
- 
+results, find them [here]()
+
+## 2. reference
+Shell scripts for downloading and processing of reference data sets used in
+human genetic association studies.
+    1. [1000Genomes]()
+## 3. utils
+Generally useful functions for plotting and data processing, find them [here]().
+
+## 4. Genotyping quality control
+
  Coming soon...
 
 ## 4. Imputation and phasing
-  
+
   Coming soon...

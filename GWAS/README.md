@@ -14,10 +14,20 @@ and processing results from genome-wide association studies.
     * Function for combining univariate association results into a meta-analysis
     p-values (based on [Boloorma (2014) Plos Genetics](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004198)).
 1. plots.r:
-    * Function for manhattan of GWAS results
-    * Function for qqplot of GWAS results
+    * Function for manhattan plot of GWAS results.
+    * Function for qqplot of GWAS results.
 1. prepGarfield.r:
     * Function formating and writing association results for analyses with
     [GARFILED](https://www.ebi.ac.uk/birney-srv/GARFIELD/).
 1. relatedness.r:
-    * Function filtering related samples from list of samples in cohort with the aim of retaining maximum number of samples in the cohort.
+    * Function filtering related samples from list of samples in cohort with the
+    aim of retaining maximum number of samples in the cohort.
+1. LDfilter.R and helperLDfilter.sh:
+    * LDfilter.R: Functions for filtering association results based on
+    significance threshold and ld structure. Relies on externally computed lists
+    of genetic variants and their tags in
+    [plink list-tags format](https://www.cog-genomics.org/plink/1.9/ld#show_tags).
+    * helperLDfilter.sh: helper function called from LDfilter.R; generates
+      temporary files by filtering external tag list for significant variants.
+      Temporary files are cleared after analysis.
+
