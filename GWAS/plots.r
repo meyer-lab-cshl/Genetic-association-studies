@@ -30,11 +30,12 @@
 #' @param genomewideline [double] y-value to draw genomewide significance line
 #' at.
 #' @param colorGenomewide [character] colors of genome-wide significance line.
-#' @param linetypeGenomewide [int] linetype of genome-wide significance line.
-#' @param size.x.labels [int] size of x-axis labels
-#' @param size.y.labels [int] size of y-axis labels
+#' @param linetypeGenomewide [integer] linetype of genome-wide significance line.
+#' @param size.x.labels [integer] size of x-axis labels
+#' @param size.y.labels [integer] size of y-axis labels
+#' @param size.points [double] size of plotting points
 #' @param raster [logical] set to use ggrastr::geom_point_rast for plotting
-#' points i.e. rasterizing points of plot. Recommended for large numbers of
+#' points i.e. rasterising points of plot. Recommended for large numbers of
 #' values to plot; allows for saving final plot as .pdf.
 #' return ggplot2 object of manhattan plot.
 
@@ -43,9 +44,9 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
                     title=NULL, max.y="max", min.y="min", is.negLog=FALSE,
                     highlight=NULL, colorHighlight="green",
                     color=c("#67a9cf", "#016c59"), a=0.5,
-                    genomewideline=-log10(5e-8), colorGenomewide = "gray90",
-                    linetypeGenomewide = 1,
-                    size.x.labels=12, size.y.labels=12,
+                    genomewideline=-log10(5e-8), colorGenomewide="gray90",
+                    linetypeGenomewide=1,
+                    size.x.labels=12, size.y.labels=12, size.points=1,
                     raster=TRUE) {
 
     if (!(chr %in% names(d))) stop(paste("Column", chr, "not found!"))
@@ -125,9 +126,9 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     if (numchroms == 1) {
         p <- ggplot2::ggplot(data=d, ggplot2::aes(x=pos, y=logp))
         if (! raster) {
-            p <- p + ggplot2::geom_point()
+            p <- p + ggplot2::geom_point(size=size.points)
         } else {
-            p <- p + ggrastr::geom_point_rast()
+            p <- p + ggrastr::geom_point_rast(size=size.points)
         }
         p <- p + ggplot2::ylab(expression(-log[10](italic(p)))) +
             ggplot2::xlab(paste("Chromosome", unique(d$CHR),"position"))
@@ -143,26 +144,31 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
 
     if (compareAnalysis) {
         if (!raster) {
-            p <- p + ggplot2::geom_point(ggplot2::aes(color=TYPE, alpha = a))
+            p <- p + ggplot2::geom_point(ggplot2::aes(color=TYPE, alpha=a),
+                                         size=size.points)
         } else {
-            p <- p + ggrastr::geom_point_rast(ggplot2::aes(color=TYPE, alpha = a))
+            p <- p + ggrastr::geom_point_rast(ggplot2::aes(color=TYPE, alpha=a),
+                                         size=size.points)
         }
         p <- p + ggplot2::scale_colour_manual(values=color)
     } else {
         if (!raster) {
-            p <- p + ggplot2::geom_point(ggplot2::aes(color=as.factor(CHR)))
+            p <- p + ggplot2::geom_point(ggplot2::aes(color=as.factor(CHR)),
+                                         size=size.points)
         } else {
-            p <- p + ggrastr::geom_point_rast(ggplot2::aes(color=as.factor(CHR)))
+            p <- p + ggrastr::geom_point_rast(ggplot2::aes(color=as.factor(CHR)),
+                                         size=size.points)
         }
         p <- p + ggplot2::scale_colour_manual(values=mycols, guide=FALSE)
-        p <- p + ggplot2::theme(legend.position = "none")
+        p <- p + ggplot2::theme(legend.position="none")
     }
     if (!is.null(highlight)) {
         if (any(!(highlight %in% as.vector(d$SNP)))) {
             warning("SNPs selected for highlighting do not exist in d")
         }
         d.annotate <- d[as.numeric(substr(d$SNP,3,100)) %in% highlight, ]
-        p <- p + ggplot2::geom_point(data=d.annotate, colour=I(colorHighlight))
+        p <- p + ggplot2::geom_point(data=d.annotate, colour=I(colorHighlight),
+                                         size=size.points)
     }
 
     if (is.null(title)) {
