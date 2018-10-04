@@ -47,11 +47,13 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
     if (verbose) message("Reading association results from chr", chr)
     tmp <- data.table::fread(readString, sep=" ", stringsAsFactors=FALSE,
                              data.table=FALSE, header=TRUE)
+    # Remove variants with AF of 1/0
+    tmp <- tmp[!tmp$af %in% c(0,1),]
+    
     # Filter based on MAF
     if (!is.null(maf)) {
         tmp <- tmp[tmp$af > maf,]
     }
-    tmp <- tmp[!tmp$af %in% c(0,1),]
 
     # Filter on info criterion
     if (!is.null(info)) {
