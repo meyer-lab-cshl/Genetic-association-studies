@@ -73,6 +73,14 @@
 #' option, make sure you have X-forwarding/graphical interface available for
 #' interactive plotting. Alternatively, enclose calls to this function in
 #' pdf(outfile) perSampleQC(arguments) dev.off().
+#' If TRUE, i) depicts the X-chromosomal heterozygosity (SNPSEX) of the samples
+#' split by their PEDSEX (if do.check_sex is TRUE), ii) creates a scatter plot
+#' with samples' missingness rates on x-axis and their heterozygosity rates on
+#' the y-axis (if do.check_heterozygosity_and_missingness is TRUE), iii) depicts
+#' all pair-wise IBD-estimates as histogram (if do.check_relatedness is TRUE)
+#' and iv) creates a scatter plot of PC1 versus PC2 color-coded for samples of
+#' reference populations and study population (if do.check_relatedness is set to
+#' TRUE).
 #' @return named [list] with i) sample_missingness containing a [vector] with
 #' sample IIDs failing the missingness threshold imissTh, ii) highIBD containing
 #' a [vector] with sample IIDs failing the relatedness threshold highIBDTh, iii)
@@ -157,10 +165,10 @@ perSampleQC <- function(qcdir, alg,
         fail_relatedness <- check_relatedness(qcdir=qcdir, alg=alg,
                                               famfile=family,
                                               highIBDTh=highIBDTh, plot=plot)
-        if (!is.null(fail_relatedness$fail_highIBD)) {
-            write.table(ID[which(ID[,1] %in% fail_highIBD[,1]),],
-                        file=paste(qcdir,"/", alg,".fail_IBD.txt", sep=""),
-                        row.names=FALSE, quote=FALSE, col.names=TRUE, sep="\t")
+        #if (!is.null(fail_relatedness)) {
+        #    write.table(fail_relatedness[,1:2]),],
+        #                file=paste(qcdir,"/", alg,".fail_IBD.txt", sep=""),
+        #                row.names=FALSE, quote=FALSE, col.names=TRUE, sep="\t")
         }
     }
     if (do.check_ancestry) {
@@ -601,12 +609,12 @@ check_relatedness <- function(qcdir, alg, famfile=NULL, highIBDTh=0.1875,
     is.IBD =  system(paste("cat ", qcdir, "/", alg, ".fail-IBD.IDs | wc -l",
                                sep=""), intern=TRUE)
     if (is.IBD != 0 ) {
-        highIBD <- read.table(paste(qcdir,"/", alg, ".fail-IBD.IDs",
+        fail_highIBD <- read.table(paste(qcdir,"/", alg, ".fail-IBD.IDs",
                                          sep=""))
         colnames(highIBD) <- c("FID", "IID")
-        fail_highIBD <- dplyr::filter(genome,
-                                      (IID1 %in% highIBD$IID |
-                                       IID2 %in% highIBD$IID))
+        #fail_highIBD <- dplyr::filter(genome,
+        #                              (IID1 %in% highIBD$IID |
+        #                               IID2 %in% highIBD$IID))
     } else {
         fail_highIBD  <- NULL
     }
@@ -623,7 +631,7 @@ check_relatedness <- function(qcdir, alg, famfile=NULL, highIBDTh=0.1875,
              ylab="# of pairs")
             abline(v=highIBDTh, lty=2, col="red")
     }
-    return(fail_IBD=fail_highIBD)
+    return(fail_highIBD)
 }
 
 

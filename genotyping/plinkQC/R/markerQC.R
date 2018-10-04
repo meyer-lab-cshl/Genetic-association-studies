@@ -23,6 +23,10 @@
 #' option, make sure you have X-forwarding/graphical interface available for
 #' interactive plotting. Alternatively, enclose calls to this function in
 #' pdf(outfile) perMarkerQC(arguments) dev.off().
+#' If TRUE, depicts i) SNP missingness rates (stratified by minor allele
+#' frequency) as histograms, ii) p-values of HWE exact test (stratified by all
+#' and low p-values) as histograms and iii) the minor allele frequency
+#' distribution as a histogram.
 #' @return named [list] with i) SNP_missingness containing a [vector] with
 #' SNP IDs failing the missingness threshold lmissTh, ii) hew containing a
 #' [vector] with SNP IDs failing the HWE exact test threshold hweTh and iii)
@@ -63,6 +67,8 @@ perMarkerQC <- function(qcdir, alg, mafTh=0.01, macTh=20, hweTh=1e-5,
 #' option, make sure you have X-forwarding/graphical interface available for
 #' interactive plotting. Alternatively, enclose calls to this function in
 #' pdf(outfile) check_snp_missingness(arguments) dev.off().
+#' If TRUE, depicts SNP missingness rates (stratified by minor allele frequency)
+#' as histograms.
 #' @return [data.frame] with CHR (Chromosome code), SNP (Variant identifier),
 #' CLST (Cluster identifier. Only present with --within/--family), N_MISS
 #' (Number of missing genotype call(s), not counting obligatory missings),
@@ -147,6 +153,8 @@ check_snp_missingness <- function(qcdir, alg, lmissTh=0.01, plot=FALSE) {
 #' option, make sure you have X-forwarding/graphical interface available for
 #' interactive plotting. Alternatively, enclose calls to this function in
 #' pdf(outfile) check_hwe(arguments) dev.off().
+#' If TRUE, depicts p-values of HWE exact test (stratified by all and low
+#' p-values) as histograms.
 #' @return [data.frame] with CHR (Chromosome code), SNP (Variant identifier),
 #' TEST (Type of test: one of {'ALL', 'AFF', 'UNAFF', 'ALL(QT)', 'ALL(NP)'}), A1
 #' (Allele 1; usually minor), A2 (Allele 2; usually major), GENO ('/'-separated
@@ -197,10 +205,9 @@ check_hwe <- function(qcdir, alg, hweTh=1e-5, plot=FALSE) {
 #' Identification of SNPs with a very low minor allele frequency
 #'
 #' Uses plink --remove alg.fail.IDs --freq to calculate the minor allele
-#' frequencies for all variants in the individuals that
-#' passed the perIndividualQC.
-#' If plot is TRUE, the minor allele frequency distributions are plotted as
-#' histograms.
+#' frequencies for all variants in the individuals that passed the perSampleQC.
+#' If plot is TRUE, the minor allele frequency distributions is plotted as a
+#' histogram.
 #'
 #' @param qcdir [character] /path/to/directory/with/QC/results containing
 #' alg.bim, alg.bed, alg.fam files and alg.fail.IDs containing IIDs of
@@ -214,6 +221,7 @@ check_hwe <- function(qcdir, alg, hweTh=1e-5, plot=FALSE) {
 #' option, make sure you have X-forwarding/graphical interface available for
 #' interactive plotting. Alternatively, enclose calls to this function in
 #' pdf(outfile) check_maf(arguments) dev.off().
+#' If TRUE, the minor allele frequency distribution is plotted in a histogram.
 #' @return [data.frame] with CHR (Chromosome code), SNP (Variant identifier), A1
 #' (Allele 1; usually minor), A2 (Allele 2; usually major), MAF (Allele 1
 #' frequency), NCHROBS (Number of allele observations) for all SNPs that failed
