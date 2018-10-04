@@ -262,9 +262,11 @@ overviewPerSampleQC <- function(fail_list, plot=FALSE) {
     if (plot) {
         UpSetR::upset(UpSetR::fromList(fail_list_wo_ancestry), order.by = "freq",
                       empty.intersections = "on", text.scale=1.2,
+                      title="Overview quality control failures",
                       main.bar.color="#1b9e77", matrix.color="#1b9e77",
                       sets.bar.color="#d95f02")
         UpSetR::upset(UpSetR::fromList(fail_all), order.by = "freq",
+                      title="Intersection between QC and ancestry failures",
                       empty.intersections = "on", text.scale=1.2,
                       main.bar.color="#7570b3", matrix.color="#7570b3",
                       sets.bar.color="#e7298a" )
