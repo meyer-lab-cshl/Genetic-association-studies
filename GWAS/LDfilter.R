@@ -24,11 +24,11 @@
 #' [tagsSplit]. Files can be generated in plink tag-list format via
 #' (\url{https://www.cog-genomics.org/plink/1.9/ld#show_tags})
 #' plink --bfile bfile --show-tags all --tag-r2 r2 --tag-kb kb --out outfile.
-#' Column names for [tags_columnID] and [tags_columnTags] will have to be added.
 #' Alternatively, precomputed LD-list for European Samples for strict and
 #' lenient LD pruning can be found as part of the supplementary data of the
 #' GARFIELD package which can be found here:
 #' https://www.ebi.ac.uk/birney-srv/GARFIELD/
+#' Column names for [tags_columnID] and [tags_columnTags] will have to be added.
 #' @param tags_ID [character] Column name in
 #' tags_dir/tags_prefix[chr]tags_suffix containing the genetic variant
 #' identifier.
@@ -61,6 +61,8 @@
 #' column in gwas. Entries have to be floats.
 #' @param is.negLog [logical] Indicates if [p_name] column is converted to
 #' -log10(p-value)
+#' @param greedy [logical] Greedy pruning i.e. multiple passes of LDfilter till
+#' every variant in LD is removed.
 #' @return Named [list] with all significant loci (sig) and most significant
 #' genetic variant per locus (sig_no_ld).
 
@@ -69,7 +71,7 @@ filterSigLoci4LD <- function(gwas, tags_dir, tags_prefix, tags_suffix,
                              threshold=5*10^(-8), gwas_chr="CHR",
                              gwas_p="P", gwas_snp="SNP", gwas_bp="BP",
                              gwas_af="AF", gwas_info="INFO", is.negLog=FALSE,
-                             matchBy=c("BP", "SNP"), recursive=FALSE) {
+                             matchBy=c("BP", "SNP"), greedy=TRUE) {
 
     matchBy <- match.arg(matchBy)
 
@@ -163,7 +165,7 @@ filterSigLoci4LD <- function(gwas, tags_dir, tags_prefix, tags_suffix,
             old_count <- length(sigSNP_wo_ld)
             new_count <- length(sigSNP_wo_ld) + 1
 
-            if (recursive) {
+            if (greedy) {
                 while(old_count != new_count) {
                     old_count <- length(sigSNP_wo_ld)
                     newSNP <- sapply(sigSNP_wo_ld, filterLD, allLD=snp2ld,
