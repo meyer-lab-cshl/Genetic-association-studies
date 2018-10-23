@@ -66,10 +66,10 @@
 
 filterSigLoci4LD <- function(gwas, tags_dir, tags_prefix, tags_suffix,
                              tags_ID="ID", tags_Tags="TAGS", tagsSplit=",",
-                             threshold=5*10^(-8), chr_name="CHR",
+                             threshold=5*10^(-8), gwas_chr="CHR",
                              gwas_p="P", gwas_snp="SNP", gwas_bp="BP",
                              gwas_af="AF", gwas_info="INFO", is.negLog=FALSE,
-                             matchBy=c("BP", "SNP")) {
+                             matchBy=c("BP", "SNP"), recursive=FALSE) {
 
     matchBy <- match.arg(matchBy)
 
@@ -110,7 +110,7 @@ filterSigLoci4LD <- function(gwas, tags_dir, tags_prefix, tags_suffix,
     } else {
         sigChr <- unique(sig$CHR)
         message("Significant SNPs on chromosomes ", paste(sigChr, collapse=","))
-        ld <- lapply(sigChr, function(chr) {
+        sig_wo_ld <- lapply(sigChr, function(chr) {
             message("Getting tags for chr", chr, "...")
             chr_str <- gsub("chr", "", chr)
             sig_on_chr <- dplyr::filter_(sig, ~CHR == chr)
@@ -136,8 +136,8 @@ filterSigLoci4LD <- function(gwas, tags_dir, tags_prefix, tags_suffix,
                 if (!(tags_ID %in% names(ld))) {
                     stop(paste("Column", tags_ID, "not found!"))
                 }
-                colnames(gwas)[colnames(gwas) == tags_ID] <- "ID"
-                colnames(gwas)[colnames(gwas) == tags_Tags] <- "TAGS"
+                colnames(ld)[colnames(ld) == tags_ID] <- "ID"
+                colnames(ld)[colnames(ld) == tags_Tags] <- "TAGS"
                 ld$CHR <- chr_str
                 system(paste("rm", sig_file, out_file))
             } else {
@@ -157,20 +157,22 @@ filterSigLoci4LD <- function(gwas, tags_dir, tags_prefix, tags_suffix,
             message("Filter loci for variant with minimal p-value...")
             sigSNP_wo_ld <- sapply(snp2ld$SNP, filterLD, allLD=snp2ld,
                                 is.negLog=is.negLog, gwas=gwas,
-                                tagsSplit=tagsSplit)
+                                tagsSplit=tagsSplit, matchBy=matchBy)
             sigSNP_wo_ld <- sigSNP_wo_ld[!duplicated(sigSNP_wo_ld)]
 
             old_count <- length(sigSNP_wo_ld)
             new_count <- length(sigSNP_wo_ld) + 1
 
-            while(old_count != new_count) {
-                old_count <- length(sigSNP_wo_ld)
-                newSNP <- sapply(sigSNP_wo_ld, filterLD, allLD=snp2ld,
-                              is.negLog=is.negLog, gwas=gwas,
-                              tagsSplit=tagsSplit)
-                newSNP <- newSNP[!duplicated(newSNP)]
-                new_count <- length(newSNP)
-                sigSNP_wo_ld <- newSNP
+            if (recursive) {
+                while(old_count != new_count) {
+                    old_count <- length(sigSNP_wo_ld)
+                    newSNP <- sapply(sigSNP_wo_ld, filterLD, allLD=snp2ld,
+                                  is.negLog=is.negLog, gwas=gwas,
+                                  tagsSplit=tagsSplit)
+                    newSNP <- newSNP[!duplicated(newSNP)]
+                    new_count <- length(newSNP)
+                    sigSNP_wo_ld <- newSNP
+                }
             }
             sigAll_wo_ld <- gwas[gwas$SNP %in% sigSNP_wo_ld,]
             return(sigAll_wo_ld)
@@ -261,10 +263,10 @@ findLD <- function(SNP, CHR, BP, LD, id_name, chr_name="CHR", tags_name="TAGS",
                    matchBy=c('BP', 'SNP')) {
     matchBy <- match.arg(matchBy)
     if (!(chr_name %in% names(LD))) {
-        stop(paste("Column", chr_name, "not found!"))
+        stop(paste("Column", chr_name, "not found in LD!"))
     }
     if (!(tags_name %in% names(LD))) {
-        stop(paste("Column", tags_name, "not found!"))
+        stop(paste("Column", tags_name, "not found in LD!"))
     }
     if (!(id_name %in% names(LD))) {
         stop(paste("Column", id_name, "not found!"))
@@ -347,8 +349,16 @@ filterLD <- function(snp, allLD, gwas, is.negLog=FALSE, tags_name_ld="TAGS",
     colnames(gwas)[colnames(gwas) == snp_name_gwas] <- "SNP"
     colnames(gwas)[colnames(gwas) == p_name_gwas] <- "P"
 
-    tags <- c(strsplit(allLD$TAGS[allLD$SNP == snp], split=tagsSplit,
+    if (matchBy == "SNP") {
+        tags <- c(strsplit(allLD$TAGS[allLD$SNP == snp], split=tagsSplit,
                        fixed=TRUE)[[1]], snp)
+    } else if (matchBy == "BP") {
+        tags <- c(strsplit(allLD$TAGS[allLD$SNP == snp], split=tagsSplit,
+                       fixed=TRUE)[[1]], gwas$BP[gwas$SNP == snp])
+    } else {
+        stop("matchBy has to be SNP or BP, but ", matchBy, "provided.")
+    }
+
     chr <- as.numeric(allLD$CHR[allLD$SNP == snp])
 
     if ("NONE" %in% tags) {
@@ -356,11 +366,9 @@ filterLD <- function(snp, allLD, gwas, is.negLog=FALSE, tags_name_ld="TAGS",
     } else {
         if (matchBy == "SNP") {
             ld_snps <- dplyr::select_(gwas[gwas$SNP %in% tags,], ~SNP, ~P)
-        } else if (matchBy == "BP") {
+        } else {
             ld_snps <- dplyr::select_(gwas[gwas$CHR == chr & gwas$BP %in% tags,],
                                       ~SNP, ~P)
-        } else {
-            stop("matchBy has to be SNP or BP, but ", matchBy, "provided.")
         }
         if (nrow(ld_snps) > 1) {
             if (is.negLog) {
