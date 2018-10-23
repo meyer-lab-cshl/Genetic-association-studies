@@ -62,6 +62,7 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
     if (biallelicOnly) {
         tmp <- biallelic(tmp)
     }
+    if (all(is.na(tmp$chr))) tmp$chr <- chr
     return(tmp)
 }
 
