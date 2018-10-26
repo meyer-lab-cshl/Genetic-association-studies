@@ -23,9 +23,8 @@ human genetic association studies.
 Generally useful functions for plotting and data processing, find them [here](https://github.com/HannahVMeyer/Genetic-association-studies/tree/master/utils).
 
 ## 4. Genotyping quality control
-
- Coming soon...
+Genotype quality control for genotyping arrays with
+[plinkQC](https://hannahvmeyer.github.io/plinkQC/)
 
 ## 4. Imputation and phasing
-
-  Coming soon...
+Details to be updated soon. Getting started [here]()
