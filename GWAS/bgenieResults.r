@@ -45,7 +45,7 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
     }
     readString <- paste("zcat", chrFile)
     if (verbose) message("Reading association results from chr", chr)
-    tmp <- data.table::fread(readString, sep=" ", stringsAsFactors=FALSE,
+    tmp <- data.table::fread(cmd=readString, sep=" ", stringsAsFactors=FALSE,
                              data.table=FALSE, header=TRUE)
     # Remove variants with AF of 1/0
     tmp <- tmp[!tmp$af %in% c(0,1),]
