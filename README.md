@@ -27,5 +27,4 @@ Genotype quality control for genotyping arrays with
 [plinkQC](https://hannahvmeyer.github.io/plinkQC/)
 
 ## 4. Imputation and phasing
-Details to be updated soon. Getting started
-
+Details to be updated soon. Getting started [here](https://github.com/HannahVMeyer/Genetic-association-studies/tree/master/imputation).
