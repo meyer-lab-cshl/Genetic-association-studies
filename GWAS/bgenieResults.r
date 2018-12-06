@@ -49,10 +49,14 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
                              data.table=FALSE, header=TRUE)
     # Remove variants with AF of 1/0
     tmp <- tmp[!tmp$af %in% c(0,1),]
-    
+
     # Filter based on MAF
     if (!is.null(maf)) {
-        tmp <- tmp[tmp$af > maf,]
+        if (tmp$af < 0.5) {
+            tmp <- tmp[tmp$af > maf,]
+        } else {
+            tmp <- tmp[(1 - tmp$af) > maf,]
+        }
     }
 
     # Filter on info criterion
