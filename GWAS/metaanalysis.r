@@ -13,6 +13,7 @@
 #' for Stature, Fatness and Reproduction in Beef Cattle. PLoS Genet 10(3):
 #' e1004198. doi:10.1371/journal.pgen.1004198
 pseudoMultitrait <- function(summarystats) {
+    summarystats <- as.matrix(summarystats)
     df <- dim(summarystats)[2]
     cor_sstats<- cor(summarystats)
     cor_sstats_inv <- chol2inv(chol(cor_sstats))
