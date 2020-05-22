@@ -9,6 +9,12 @@ for chr in `seq 1 22`; do
         --out $dir/plink/ALL.chr$chr.phase3_shapeit2_mvncall_integrated_v5_extra_anno.20130502.genotypes
 done
 
+for chr in `seq 1 22`; do
+    plink --bcf $dir/vcf/$chr.bcf \
+        --make-bed \
+        --out $dir/plink/$chr
+done
+
 ## Filter European samples
 #CEU, Utah residents with Northern and Western European ancestry
 #FIN, Finnish in Finland
