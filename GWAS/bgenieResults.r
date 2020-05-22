@@ -52,11 +52,7 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
 
     # Filter based on MAF
     if (!is.null(maf)) {
-        if (tmp$af < 0.5) {
-            tmp <- tmp[tmp$af > maf,]
-        } else {
-            tmp <- tmp[(1 - tmp$af) > maf,]
-        }
+        tmp <- tmp[tmp$af > maf & (1 - tmp$af) > maf,]
     }
 
     # Filter on info criterion
@@ -79,6 +75,7 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
 #' @param sumstat [character] name of column used for summary statistic. If
 #' effect size estimates (beta) are used, output column will be beta, else
 #' SUMSTAT.
+#' @param N [integer] number of samples in in GWAS.
 #' @param ldshub_snps [data.frame] with at least 'SNP' column containing the
 #' SNP IDs relevant for analysis on LDhub
 #' \url{http://ldsc.broadinstitute.org/ldhub/}.
@@ -98,10 +95,10 @@ readBgenieOutput <- function(chr, directory, name, maf=0.01, info=0.4,
 #' \item SIGNED_SUMSTAT: Directional summary statistic as specified by
 #' --signed-sumstats.
 #' }
-bgenie2ldsc <- function(o_bgenie, sumstat, ldshub_snps){
+bgenie2ldsc <- function(o_bgenie, sumstat, N, ldshub_snps){
         data.table::setnames(o_bgenie, new="SNP", old="rsid")
-        data.table::setnames(o_bgenie, new="A1", old="a_0")
-        data.table::setnames(o_bgenie, new="A2", old="a_1")
+        data.table::setnames(o_bgenie, new="A1", old="a_1")
+        data.table::setnames(o_bgenie, new="A2", old="a_0")
         data.table::setnames(o_bgenie, new="INFO", old="info")
         data.table::setnames(o_bgenie, new="FRQ", old="af")
         if (grepl("beta", tolower(sumstat))) {
@@ -114,7 +111,7 @@ bgenie2ldsc <- function(o_bgenie, sumstat, ldshub_snps){
                                                           colnames(o_bgenie))])
         }
         o_bgenie$P <- 10^(-o_bgenie[, grepl("-log10p", colnames(o_bgenie))])
-        o_bgenie$N <- nrow(o_bgenie)
+        o_bgenie$N <- N
         o_bgenie <- o_bgenie[,!grepl("[_log10psechrt]{2,6}", colnames(o_bgenie))]
         if (!is.null(ldshub_snps)) {
             o_bgenie <- o_bgenie[o_bgenie$SNP %in% ldshub_snps$SNP, ]
