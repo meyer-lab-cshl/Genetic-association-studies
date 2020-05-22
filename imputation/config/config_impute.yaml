@@ -1,0 +1,20 @@
+
+genodir : "/path/to/directory/with/genotype/calls"
+referencedir : "/path/to/directory/with/imputation/reference/panel"
+dir : "/path/to/directory/for/imputation/results"
+
+# after first run manually extracted from *no_chunks by combineCheckChunks
+noSnpInInterval : '9.22,1.48,21.1'
+
+threads : 8
+window : 2
+states : 200
+
+buffer_size : 250
+k_hap : 1000
+Ne : 20000
+
+infoTh : 0.4
+missingTh : 0.01
+hweTh : "1e-5"
+mafTh : 0.005
