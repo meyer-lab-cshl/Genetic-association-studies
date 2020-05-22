@@ -31,8 +31,10 @@
 #' at.
 #' @param colorGenomewide [character] colors of genome-wide significance line.
 #' @param linetypeGenomewide [integer] linetype of genome-wide significance line.
-#' @param size.x.labels [integer] size of x-axis labels
-#' @param size.y.labels [integer] size of y-axis labels
+#' @param size.x.title [integer] size of x-axis title
+#' @param size.y.title [integer] size of y-axis title
+#' @param size.x.text [integer] size of x-axis text
+#' @param size.y.text [integer] size of y-axis text
 #' @param size.points [double] size of plotting points
 #' @param raster [logical] set to use ggrastr::geom_point_rast for plotting
 #' points i.e. rasterising points of plot. Recommended for large numbers of
@@ -46,7 +48,8 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
                     color=c("#67a9cf", "#016c59"), a=0.5,
                     genomewideline=-log10(5e-8), colorGenomewide="gray90",
                     linetypeGenomewide=1,
-                    size.x.labels=12, size.y.labels=12, size.points=1,
+                    size.x.title=12, size.y.title=12,
+                    size.x.text=12, size.y.text=12,size.points=1,
                     raster=TRUE) {
 
     if (!(chr %in% names(d))) stop(paste("Column", chr, "not found!"))
@@ -166,7 +169,7 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
         if (any(!(highlight %in% as.vector(d$SNP)))) {
             warning("SNPs selected for highlighting do not exist in d")
         }
-        d.annotate <- d[as.numeric(substr(d$SNP,3,100)) %in% highlight, ]
+        d.annotate <- d[d$SNP %in% highlight, ]
         p <- p + ggplot2::geom_point(data=d.annotate, colour=I(colorHighlight),
                                          size=size.points)
     }
@@ -176,8 +179,10 @@ manhattan <- function(d, chr = "CHR", bp = "BP", p = "P", snp="SNP",
     }
     p <- p + ggplot2::theme_classic()
     p <- p + ggplot2::theme(
-        axis.text.x=ggplot2::element_text(size=size.x.labels, colour="grey50"),
-        axis.text.y=ggplot2::element_text(size=size.y.labels, colour="grey50"),
+        axis.text.x=ggplot2::element_text(size=size.x.text, colour="grey50"),
+        axis.text.y=ggplot2::element_text(size=size.y.text, colour="grey50"),
+        axis.title.x=ggplot2::element_text(size=size.x.title, colour="grey50"),
+        axis.title.y=ggplot2::element_text(size=size.y.title, colour="grey50"),
         axis.ticks=ggplot2::element_blank()
     )
 
